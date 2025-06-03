@@ -1,0 +1,6 @@
+cv2
+scikit-learn
+pandas
+numpy
+Pillow
+mahotas
