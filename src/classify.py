@@ -62,8 +62,15 @@ def train_and_evaluate(csv_path, feature_type):
             print("❌ Data tidak memiliki fitur yang cukup (minimal 1 fitur dan 1 label).")
             return
 
+
         X = df.iloc[:, 1:-1]
         y = df.iloc[:, -1]
+
+    knn = KNeighborsClassifier(n_neighbors=3)
+    knn.fit(X_train, y_train)
+    y_pred_knn = knn.predict(X_test)
+    print(f"KNN Accuracy: {accuracy_score(y_test, y_pred_knn):.2f}")
+
 
         if X.isnull().values.any():
             print("❌ Terdapat nilai NaN di fitur.")
