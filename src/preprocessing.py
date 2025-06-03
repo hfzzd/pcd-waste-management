@@ -28,3 +28,6 @@ def preprocess_images():
             cv2.imwrite(os.path.join(OUTPUT_DIR, f"{filename}_rgb.jpg"), img)
             cv2.imwrite(os.path.join(OUTPUT_DIR, f"{filename}_gray.jpg"), gray)
             cv2.imwrite(os.path.join(OUTPUT_DIR, f"{filename}_hsv.jpg"), hsv)
+
+def run():
+    preprocess_images()
