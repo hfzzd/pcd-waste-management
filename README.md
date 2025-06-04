@@ -1,5 +1,11 @@
 # 📌 waste-classification
-This project focuses on the classification of waste images using digital image processing techniques. The main components of the project include preprocessing of images, feature extraction (color, shape, and texture), and classification using machine learning algorithms.
+Proyek ini berfokus pada klasifikasi gambar sampah dengan menggunakan teknik pemrosesan gambar digital. Komponen utama dari proyek ini meliputi prapemrosesan gambar, ekstraksi fitur (warna, bentuk, dan tekstur).
+
+---
+## 🚨 Anggota Kelompok
+- Hafizd Ammar Buana (152023094)
+- Rizki Fauzi (152023095)
+- Abdurrahman Aufar (152023098)
 
 ---
 
@@ -7,6 +13,7 @@ This project focuses on the classification of waste images using digital image p
 
 - Mengembangkan model klasifikasi citra sampah.
 - Mengurangi kesalahan manusia dalam memilah sampah.
+- Mengklasifikasi jenis sampah seperti (Plastik, Kertas, dan Besi)
 - Meningkatkan kesadaran dan efisiensi sistem pengelolaan sampah.
 
 ---
@@ -26,21 +33,15 @@ This project focuses on the classification of waste images using digital image p
 
 
 ## 🛠 Setup Instructions
-1. Clone the repository:
+1. Clone repository:
    ```
    git clone <repository-url>
-   cd pcd-waste-management
    ```
 
-2. Install the required packages:
+2. Install package yang diperlukan:
    ```
    pip install -r requirements.txt
    ```
 
-3. Place your original waste images in the `data/original/` directory.
-
-## 🚀 Usage
-To run the project, execute the following command:
-```
-python src/main.py
-```
+3. Simpan gambar sampah original di folder `data/original/`.
+---
