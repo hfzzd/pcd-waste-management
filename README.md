@@ -1,5 +1,5 @@
 # 📌 waste-classification
-Proyek ini berfokus pada klasifikasi gambar sampah dengan menggunakan teknik pemrosesan gambar digital. Komponen utama dari proyek ini meliputi prapemrosesan gambar, ekstraksi fitur (warna, bentuk, dan tekstur), dan klasifikasi sampah menggunakan Machine Learning (SVM).
+Proyek ini berfokus pada klasifikasi gambar sampah dengan menggunakan teknik pemrosesan gambar digital. Komponen utama dari proyek ini meliputi prapemrosesan gambar, ekstraksi fitur (warna, bentuk, dan tekstur), dan klasifikasi sampah menggunakan SVM.
 
 ---
 ## 🚨 Anggota Kelompok
