@@ -7,9 +7,11 @@ import pandas as pd
 import keyboard  # Untuk mendeteksi tombol ESC
 
 class FeatureExtractor:
-    def __init__(self):
+    def __init__(self, output_dir='Test/hasil_ekstraksi'):
         self.features = []
         self.labels = []
+        self.output_dir = output_dir
+        os.makedirs(output_dir, exist_ok=True)
 
     def extract_color_features(self, img):
         hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -80,18 +82,20 @@ class FeatureExtractor:
             print(f"Gagal memuat gambar: {img_path}")
             return None
 
+        base_filename = os.path.splitext(os.path.basename(img_path))[0]
         color_features = self.extract_color_features(img)
         shape_features = self.extract_shape_features(img)
         texture_features = self.extract_texture_features(img)
         all_features = np.concatenate([color_features, shape_features, texture_features])
 
-        # Visualisasi (opsional)
-        self.show_preprocessing(img, f"Preprocessing - {label}")
+        # Simpan hasil visualisasi
+        self.show_preprocessing(img, f"Preprocessing - {label}", f"{base_filename}_preprocessing.jpg")
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         lbp = local_binary_pattern(gray, 24, 3, method='uniform')
-        self.show_lbp(gray, lbp)
+        self.show_lbp(gray, lbp, f"{base_filename}_lbp.jpg")
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        self.show_hsv_histogram(hsv)
+        self.show_hsv_visual(hsv, f"{base_filename}_hsv_visual.jpg")
+
 
         if label is not None:
             self.features.append(all_features)
@@ -108,8 +112,7 @@ class FeatureExtractor:
         df.to_csv(output_file, index=False)
         print(f"Fitur disimpan ke {output_file}")
 
-    # --- Visualisasi ---
-    def show_preprocessing(self, img, title="Hasil Preprocessing"):
+    def show_preprocessing(self, img, title="Ekstraksi bentuk", filename="preprocessing.jpg"):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
         contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -117,26 +120,34 @@ class FeatureExtractor:
         cv2.drawContours(img_contour, contours, -1, (0, 255, 0), 2)
 
         plt.figure(figsize=(12, 4))
-        plt.subplot(1, 3, 1)
+        plt.subplot(1, 4, 1)
         plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         plt.title("Original Image")
         plt.axis('off')
 
-        plt.subplot(1, 3, 2)
+        plt.subplot(1, 4, 2)
         plt.imshow(gray, cmap='gray')
-        plt.title("Grayscale + Threshold")
+        plt.title("Grayscale")
         plt.axis('off')
 
-        plt.subplot(1, 3, 3)
+        plt.subplot(1, 4, 3)
+        plt.imshow(thresh, cmap='gray')
+        plt.title("Threshold")
+        plt.axis('off')
+
+        plt.subplot(1, 4, 4)
         plt.imshow(cv2.cvtColor(img_contour, cv2.COLOR_BGR2RGB))
         plt.title("Contours")
         plt.axis('off')
 
         plt.suptitle(title)
         plt.tight_layout()
-        plt.show()
+        save_path = os.path.join(self.output_dir, filename)
+        plt.savefig(save_path)
+        plt.close()
 
-    def show_lbp(self, gray, lbp):
+
+    def show_lbp(self, gray, lbp, filename="lbp_texture.jpg"):
         plt.figure(figsize=(10, 4))
         plt.subplot(1, 2, 1)
         plt.imshow(gray, cmap='gray')
@@ -145,21 +156,36 @@ class FeatureExtractor:
         plt.imshow(lbp, cmap='gray')
         plt.title("LBP Texture")
         plt.tight_layout()
-        plt.show()
+        save_path = os.path.join(self.output_dir, filename)
+        plt.savefig(save_path)
+        plt.close()
 
-    def show_hsv_histogram(self, hsv_img):
-        color_labels = ['Hue', 'Saturation', 'Value']
-        plt.figure(figsize=(10, 3))
-        for i in range(3):
-            hist = cv2.calcHist([hsv_img], [i], None, [8], [0, 180 if i == 0 else 256])
-            hist = cv2.normalize(hist, hist).flatten()
-            plt.subplot(1, 3, i + 1)
-            plt.bar(range(len(hist)), hist, color='gray')
-            plt.title(f"{color_labels[i]} Histogram")
-            plt.tight_layout()
-        plt.show()
 
-# --- Proses Folder Gambar dengan ESC ---
+    def show_hsv_visual(self, hsv_img, filename="hsv_visual.jpg"):
+        h, s, v = cv2.split(hsv_img)
+
+        plt.figure(figsize=(12, 4))
+        plt.subplot(1, 3, 1)
+        plt.imshow(h, cmap='hsv')
+        plt.title("Hue")
+        plt.axis('off')
+
+        plt.subplot(1, 3, 2)
+        plt.imshow(s, cmap='gray')
+        plt.title("Saturation")
+        plt.axis('off')
+
+        plt.subplot(1, 3, 3)
+        plt.imshow(v, cmap='gray')
+        plt.title("Value")
+        plt.axis('off')
+
+        save_path = os.path.join(self.output_dir, filename)
+        plt.tight_layout()
+        plt.savefig(save_path)
+        plt.close()
+
+
 def process_images_in_folder(folder_path, label, extractor):
     for idx, filename in enumerate(os.listdir(folder_path)):
         if keyboard.is_pressed('esc'):
@@ -170,11 +196,10 @@ def process_images_in_folder(folder_path, label, extractor):
             print(f"[{label}] Memproses gambar {idx + 1}: {filename}")
             extractor.extract_all_features(img_path, label)
 
-# --- Main Program ---
 if __name__ == "__main__":
     extractor = FeatureExtractor()
-    process_images_in_folder('D:/Kuliah/Semester 4/Tugas Besar/Test/dataset_sampah/plastik', 'plastik', extractor)
-    process_images_in_folder('D:/Kuliah/Semester 4/Tugas Besar/Test/dataset_sampah/kertas', 'kertas', extractor)
-    process_images_in_folder('D:/Kuliah/Semester 4/Tugas Besar/Test/dataset_sampah/organik', 'organik', extractor)
-    extractor.save_features_to_csv('hasil_ekstraksi_fitur.csv')
+    process_images_in_folder('Test/dataset_sampah/plastik', 'plastik', extractor)
+    process_images_in_folder('Test/dataset_sampah/kertas', 'kertas', extractor)
+    process_images_in_folder('Test/dataset_sampah/organik', 'organik', extractor)
+    extractor.save_features_to_csv('Test/hasil_ekstraksi_fitur.csv')
     print("✅ Ekstraksi fitur selesai!")

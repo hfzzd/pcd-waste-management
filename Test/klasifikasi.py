@@ -103,9 +103,9 @@ def process_images_in_folder(folder_path, label, extractor):
 
 def train_and_save_model():
     extractor = FeatureExtractor()
-    process_images_in_folder('dataset_sampah/plastik', 'plastik', extractor)
-    process_images_in_folder('dataset_sampah/kertas', 'kertas', extractor)
-    process_images_in_folder('dataset_sampah/organik', 'organik', extractor)
+    process_images_in_folder('Test/dataset_sampah/plastik', 'plastik', extractor)
+    process_images_in_folder('Test/dataset_sampah/kertas', 'kertas', extractor)
+    process_images_in_folder('Test/dataset_sampah/organik', 'organik', extractor)
 
     X = np.array(extractor.features)
     y = np.array(extractor.labels)
@@ -119,20 +119,20 @@ def train_and_save_model():
     model = KNeighborsClassifier(n_neighbors=3)
     model.fit(X_train, y_train)
 
-    joblib.dump(model, 'model_knn.pkl')
-    joblib.dump(le, 'label_encoder.pkl')
+    joblib.dump(model, 'Test/model_knn.pkl')
+    joblib.dump(le, 'Test/label_encoder.pkl')
     print("✅ Model dilatih dan disimpan!")
 
 # -------------------------
 # PREDIKSI SEMUA GAMBAR DALAM FOLDER
 # -------------------------
 def predict_all_images_in_folder(folder_path):
-    if not os.path.exists('model_knn.pkl') or not os.path.exists('label_encoder.pkl'):
+    if not os.path.exists('Test/model_knn.pkl') or not os.path.exists('Test/label_encoder.pkl'):
         print("❌ Model belum dilatih.")
         return
 
-    model = joblib.load('model_knn.pkl')
-    le = joblib.load('label_encoder.pkl')
+    model = joblib.load('Test/model_knn.pkl')
+    le = joblib.load('Test/label_encoder.pkl')
     extractor = FeatureExtractor()
 
     for filename in os.listdir(folder_path):
@@ -156,6 +156,6 @@ if __name__ == "__main__":
     train_and_save_model()
 
     for category in ['plastik', 'kertas', 'organik']:
-        folder = f'dataset_sampah/{category}'
+        folder = f'Test/dataset_sampah/{category}'
         print(f"\n🗂️ Memproses folder: {folder}")
         predict_all_images_in_folder(folder)
